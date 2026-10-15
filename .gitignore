@@ -1,0 +1,14 @@
+node_modules/
+dist/
+dineout
+.env
+*.log
+.auth/
+data/
+*session*.json
+browser-profile/
+
+.env.*
+*.har
+*.saz
+*.pcap
