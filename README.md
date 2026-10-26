@@ -1,5 +1,7 @@
 # Dineout CLI + MCP
 
+[MCP setup and client configuration](MCP.md)
+
 Command-line and Model Context Protocol access to Dineout restaurant discovery, availability, account details, and confirmed booking workflows.
 
 ## Install
@@ -186,3 +188,10 @@ dineout schema
 bun run check
 bun run build
 ```
+
+## Shared MCP conventions
+
+`dineout serve` starts the stdio server (`mcp` remains an alias).
+`dineout --version` reports the CLI version. Writes remain disabled unless
+`DINEOUT_MCP_ENABLE_WRITES=1` or `--allow-writes` is set at startup;
+each mutation retains its existing explicit confirmation/dry-run checks.
