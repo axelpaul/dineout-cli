@@ -3,7 +3,7 @@ import { parseArgs } from "node:util";
 import { readFileSync } from "node:fs";
 import { Dineout } from "./api.ts";
 import { authDoctor, me, refreshSession, logout, safeError } from "./auth.ts";
-const help = `Dineout CLI 0.2.0\n\nCommands:\n  restaurants [--query TEXT --category TEXT]\n  restaurant <id-or-slug>\n  filters\n  availability <restaurant-id> <YYYY-MM-DDTHH:mm> [guests]\n  waiting-times <restaurant-id> <YYYY-MM-DDTHH:mm> [guests]\n  steps <restaurant-id> <YYYY-MM-DDTHH:mm> [--event-id ID --waiting-list]\n  plan <restaurant-id> <YYYY-MM-DDTHH:mm> [guests]\n  bookings\n  booking <guid>\n  checkout <guid> [--waiting-list]\n  cancellation-allowed <guid>\n  reserve --file INPUT.json [--dry-run | --yes]\n  complete --file INPUT.json [--dry-run | --yes]\n  cancel <guid> [--dry-run | --yes]\n  resend-verification <guid> [--dry-run | --yes]\n  login start --phone <international-number> [--headed --cdp URL]\n  login verify --stdin [--cdp URL]\n  login refresh | login close | me | doctor | logout\n  mcp [--allow-writes]\n  schema | version\n\nAll output is JSON. Writes default to dry-run; --yes is required to execute.\nLogin and reserve use headless Chrome; completion requiring cards stays on the website.\n`;
+const help = `Dineout CLI 0.2.0\n\nCommands:\n  restaurants [--query TEXT --category TEXT]\n  restaurant <id-or-slug>\n  filters\n  availability <restaurant-id> <YYYY-MM-DDTHH:mm> [guests]\n  waiting-times <restaurant-id> <YYYY-MM-DDTHH:mm> [guests]\n  steps <restaurant-id> <YYYY-MM-DDTHH:mm> [--event-id ID --waiting-list]\n  plan <restaurant-id> <YYYY-MM-DDTHH:mm> [guests]\n  bookings\n  booking <guid>\n  checkout <guid> [--waiting-list]\n  cancellation-allowed <guid>\n  reserve --file INPUT.json [--dry-run | --yes]\n  complete --file INPUT.json [--dry-run | --yes]\n  cancel <guid> [--dry-run | --yes]\n  resend-verification <guid> [--dry-run | --yes]\n  login start --phone <international-number> [--headed --cdp URL]\n  login verify --stdin [--cdp URL]\n  login refresh | login close | me | doctor | logout\n  serve [--allow-writes]\n  schema | version\n\nAll output is JSON. Writes default to dry-run; --yes is required to execute.\nLogin and reserve use headless Chrome; completion requiring cards stays on the website.\n`;
 export async function main(argv = process.argv.slice(2)) {
 	const { values: v, positionals: p } = parseArgs({
 		args: argv,
@@ -11,6 +11,7 @@ export async function main(argv = process.argv.slice(2)) {
 		options: {
 			json: { type: "boolean" },
 			help: { type: "boolean", short: "h" },
+			version: { type: "boolean" },
 			"allow-writes": { type: "boolean" },
 			yes: { type: "boolean" },
 			"dry-run": { type: "boolean" },
@@ -25,7 +26,8 @@ export async function main(argv = process.argv.slice(2)) {
 			"waiting-list": { type: "boolean" },
 		},
 	});
-	const [command, arg, date, guests = "2"] = p;
+	const [parsedCommand, arg, date, guests = "2"] = p;
+	const command = v.version ? "version" : parsedCommand;
 	const api = new Dineout();
 	let out: unknown;
 	if (v.help || !command) {
@@ -52,9 +54,10 @@ export async function main(argv = process.argv.slice(2)) {
 		case "version":
 			out = { version: "0.2.0" };
 			break;
+		case "serve":
 		case "mcp": {
 			const { startMcp } = await import("./mcp.ts");
-			await startMcp(v["allow-writes"]);
+			await startMcp(v["allow-writes"] || process.env.DINEOUT_MCP_ENABLE_WRITES === "1");
 			return;
 		}
 		case "restaurants":

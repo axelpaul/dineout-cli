@@ -1,27 +1,28 @@
 {
-	"name": "dineout-cli",
-	"version": "0.2.0",
-	"private": true,
-	"type": "module",
-	"bin": {
-		"dineout": "src/index.ts"
-	},
-	"scripts": {
-		"start": "bun src/index.ts",
-		"build": "bun run build:login && bun build --compile src/index.ts --outfile dineout",
-		"build:login": "bun build --target=node --format=esm --external playwright-core src/login-command.ts --outfile dist/login-helper.mjs",
-		"test": "bun test",
-		"typecheck": "tsc --noEmit",
-		"check": "bun run build:login && bun run typecheck && bun test"
-	},
-	"dependencies": {
-		"@modelcontextprotocol/sdk": "^1.32.1",
-		"playwright-core": "^1.64.1",
-		"zod": "^4.6.7"
-	},
-	"devDependencies": {
-		"@types/bun": "latest",
-		"typescript": "^5.9.3"
-	},
-	"description": "Dineout CLI and MCP server for discovery, availability, account access and confirmed booking workflows"
+  "name": "dineout-cli",
+  "version": "0.2.0",
+  "private": true,
+  "type": "module",
+  "bin": {
+    "dineout": "src/index.ts"
+  },
+  "scripts": {
+    "start": "bun src/index.ts",
+    "build": "bun run build:login && bun build --compile src/index.ts --outfile dineout",
+    "build:login": "bun build --target=node --format=esm --external playwright-core src/login-command.ts --outfile dist/login-helper.mjs",
+    "test": "bun test",
+    "typecheck": "tsc --noEmit",
+    "check": "bun run build:login && bun run typecheck && bun test",
+    "verify:mcp": "bun scripts/verify-mcp.ts"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.32.1",
+    "playwright-core": "^1.64.1",
+    "zod": "^4.6.7"
+  },
+  "devDependencies": {
+    "@types/bun": "latest",
+    "typescript": "^5.9.3"
+  },
+  "description": "Dineout CLI and MCP server for discovery, availability, account access and confirmed booking workflows"
 }
